@@ -1,0 +1,7 @@
+{
+  "pairs.enableCharacters": ["(", "[", "{", "\"", "'", "`"],
+  "html.autoClosingTags": true,
+  "coc.preferences.autoClosePairs": false,
+  "snippets.ultisnips.pythonPrompt": false
+  "coc.preferences.disablePairs": ["<"]
+}
