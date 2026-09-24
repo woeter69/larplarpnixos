@@ -7,8 +7,25 @@
 {
   imports =
     [ # Include the results of the hardware scan.
+      <home-manager/nixos>
       ./hardware-configuration.nix
     ];
+
+  boot.supportedFilesystems = [ "ntfs" ];
+
+  # Home Manager integration
+  home-manager.backupFileExtension = "backup";
+  home-manager.users.woeter = import ./home.nix;
+  security.polkit.enable = true;
+
+  services.gnome.gnome-keyring.enable = true;
+
+  #Enable Niri
+  programs.niri.enable = true;
+  # PAM entry for swaylock
+  security.pam.services.swaylock = {};
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
 
   # Bootloader.
   boot.loader.systemd-boot.enable = false;
@@ -40,7 +57,7 @@
 
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "nixxa"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -72,9 +89,10 @@
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
+  virtualisation.waydroid.enable = true;
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -107,7 +125,7 @@
   users.users."woeter" = {
     isNormalUser = true;
     description = "woeter";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -119,7 +137,6 @@
   hardware.graphics.enable32Bit = true;  # needed for most games (32-bit game binaries + drivers)
 
   # Nix Config
-  programs.sway.enable = true;
   xdg.portal.wlr.enable = true;
 
   programs.zsh.enable = true;
@@ -155,23 +172,31 @@
   system.stateVersion = "26.05"; # Did you read the comment?
 
   # Packages
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = let
+    zen-browser = import (builtins.fetchTarball "https://github.com/youwen5/zen-browser-flake/archive/master.tar.gz") { inherit pkgs; };
+  in with pkgs; [  
 	# Free Softwares
 	git
 	neovim
 	wget
 	curl
 	
-	neovim
 	obsidian
 	vim
 	zsh
 	gcc
 	go
 	python3
+	rustup
 	nodejs
 	postgresql_17
-	
+	mariadb
+	sqlite
+	cloudflared
+	opencode
+	localsend
+	vlc
+
 	wl-clipboard
 	fastfetch
 
@@ -179,14 +204,19 @@
 	unzip
 
 	btop
+	obs-studio
 	bat
 
 	eza
 	zoxide
 	
 	# Not so free Softwares
+	blender
+	gradle
 	spotify
 	docker
+	codex
+  	ncdu
   ];
 
   #FILESYSTEMS
@@ -199,6 +229,7 @@
       "gid=100"
       "dmask=0022"
       "fmask=0133"
+      "nofail"
     ];
   };
 
@@ -228,5 +259,6 @@
   programs.nix-ld.libraries = with pkgs; [
     # add specific libs here if a binary complains about missing .so files later
   ];
+  systemd.services."systemd-suspend".serviceConfig.Environment = "SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=false";
+  systemd.services."systemd-hibernate".serviceConfig.Environment = "SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=false";
 }
-

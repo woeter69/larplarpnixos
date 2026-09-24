@@ -1,0 +1,255 @@
+// Niri configuration for NixOS
+// Adapted from your Hyprbonk (Hyprland) configuration
+// KDL format reference: https://niri-wm.github.io/niri/Configuration:-Introduction
+
+input {
+    keyboard {
+        xkb {
+            // Empty = niri reads from localectl
+        }
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+    }
+
+    mouse {
+        // Matches your old Hyprland sensitivity (-0.5)
+        accel-speed -0.5
+    }
+
+    // Hover-based focus (focus follows mouse!)
+    focus-follows-mouse
+}
+
+// Cursor styling and size (sleeker 20px with full transformation support)
+cursor {
+    xcursor-theme "Adwaita"
+    xcursor-size 20
+}
+
+// Prevents client-side window decorations from fighting rounded corners
+prefer-no-csd
+
+layout {
+    gaps 16
+
+    center-focused-column "never"
+    always-center-single-column
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 0.8
+    }
+
+    default-column-width { proportion 0.66667; }
+
+    focus-ring {
+        width 2
+        active-color "#cba6f7"   // mapped from hyprland col.active_border (Catppuccin Mauve)
+        inactive-color "#cba6f7aa"
+    }
+
+    border {
+        off
+    }
+
+    shadow {
+        on
+        softness 30
+        spread 4             // from hyprland range = 4
+        offset x=0 y=0
+        color "#ffffff88"    // adapted from hyprland's white shadow
+    }
+
+    struts {
+        left 20
+        right 20
+        top 10
+        bottom 14
+    }
+}
+
+// ----------------
+// WINDOW RULES (ROUNDED CORNERS & APP TWEAKS)
+// ----------------
+window-rule {
+    geometry-corner-radius 10
+    clip-to-geometry true
+    open-maximized-to-edges false
+    open-maximized false
+    open-fullscreen false
+}
+
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// ----------------
+// STARTUP PROGRAMS
+// ----------------
+spawn-at-startup "waybar"
+spawn-at-startup "hyprpaper"
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+spawn-at-startup "mako"
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// ----------------
+// ANIMATIONS
+// ----------------
+animations {
+    workspace-switch {
+        spring damping-ratio=0.7 stiffness=800 epsilon=0.0001
+    }
+    window-open {
+        spring damping-ratio=0.6 stiffness=1000 epsilon=0.0001
+    }
+    window-close {
+        spring damping-ratio=0.6 stiffness=1000 epsilon=0.0001
+    }
+    window-movement {
+        spring damping-ratio=0.65 stiffness=800 epsilon=0.0001
+    }
+    window-resize {
+        spring damping-ratio=0.65 stiffness=800 epsilon=0.0001
+    }
+}
+
+// ---------
+// KEYBINDS
+// ---------
+binds {
+    // --- Help / Hotkey Cheatsheet Overlay ---
+    F1 hotkey-overlay-title="Show All Shortcuts Cheatsheet" { show-hotkey-overlay; }
+    Mod+Shift+Slash hotkey-overlay-title="Show All Shortcuts Cheatsheet" { show-hotkey-overlay; }
+    Mod+Slash hotkey-overlay-title="Show All Shortcuts Cheatsheet" { show-hotkey-overlay; }
+
+    // --- Core Apps (From Hyprland config) ---
+    Mod+Q hotkey-overlay-title="Terminal: WezTerm" { spawn "wezterm"; }
+    Mod+C hotkey-overlay-title="Close Window" { close-window; }
+    Mod+B hotkey-overlay-title="Browser: Firefox" { spawn "firefox"; }
+    Mod+E hotkey-overlay-title="File Manager: Yazi" { spawn "wezterm" "start" "--" "yazi"; }
+    Mod+D hotkey-overlay-title="Rofi App Launcher" { spawn "sh" "-c" "~/.config/rofi/launcher/launcher.sh"; }
+    Mod+Shift+D hotkey-overlay-title="Wofi App Launcher" { spawn "wofi" "--show" "drun"; }
+    Mod+L hotkey-overlay-title="Lock Screen" { spawn "sh" "-c" "~/.config/hypr/scripts/lock.sh"; }
+    Mod+Escape hotkey-overlay-title="Power / Logout Menu (wlogout)" { spawn "wlogout" "--protocol" "layer-shell"; }
+    Ctrl+Shift+Tab hotkey-overlay-title="Task Manager: btop" { spawn "wezterm" "start" "--" "btop"; }
+
+    // --- Rofi Utilities (From Hyprland config) ---
+    Mod+N hotkey-overlay-title="Wi-Fi Menu" { spawn "sh" "-c" "~/.config/rofi/wifi/script.sh"; }
+    Mod+V hotkey-overlay-title="Clipboard History" { spawn "sh" "-c" "~/.config/rofi/clipboard/launcher.sh"; }
+    Mod+Shift+S hotkey-overlay-title="Screenshot Area (Hyprshot)" { spawn "sh" "-c" "~/.config/rofi/hyprshot/script.sh"; }
+    Mod+Shift+R hotkey-overlay-title="Wallpaper Selector" { spawn "sh" "-c" "~/.config/rofi/wallselect/script.sh"; }
+
+    // --- Screenshots (Native Niri) ---
+    Print hotkey-overlay-title="Interactive Screenshot" { screenshot; }
+    Ctrl+Print hotkey-overlay-title="Full Screen Screenshot" { screenshot-screen; }
+    Alt+Print hotkey-overlay-title="Window Screenshot" { screenshot-window; }
+
+    // --- Navigation (Focus) ---
+    Alt+A hotkey-overlay-title="Focus Column Left" { focus-column-left; }
+    Alt+D hotkey-overlay-title="Focus Column Right" { focus-column-right; }
+    Alt+W hotkey-overlay-title="Focus Window Up" { focus-window-up; }
+    Alt+S hotkey-overlay-title="Focus Window Down" { focus-window-down; }
+
+    Mod+Left hotkey-overlay-title="Focus Column Left" { focus-column-left; }
+    Mod+Right hotkey-overlay-title="Focus Column Right" { focus-column-right; }
+    Mod+Up hotkey-overlay-title="Focus Window Up" { focus-window-up; }
+    Mod+Down hotkey-overlay-title="Focus Window Down" { focus-window-down; }
+
+    Mod+Home hotkey-overlay-title="Focus First Column" { focus-column-first; }
+    Mod+End hotkey-overlay-title="Focus Last Column" { focus-column-last; }
+
+    // --- Window & Column Movement ---
+    Alt+Shift+A hotkey-overlay-title="Move Column Left" { move-column-left; }
+    Alt+Shift+D hotkey-overlay-title="Move Column Right" { move-column-right; }
+    Alt+Shift+W hotkey-overlay-title="Move Window Up" { move-window-up; }
+    Alt+Shift+S hotkey-overlay-title="Move Window Down" { move-window-down; }
+
+    Mod+Ctrl+Left hotkey-overlay-title="Move Column Left" { move-column-left; }
+    Mod+Ctrl+Right hotkey-overlay-title="Move Column Right" { move-column-right; }
+    Mod+Ctrl+Up hotkey-overlay-title="Move Window Up" { move-window-up; }
+    Mod+Ctrl+Down hotkey-overlay-title="Move Window Down" { move-window-down; }
+
+    // --- Niri Sizing & Layout Features ---
+    Mod+R hotkey-overlay-title="Cycle Column Width Presets (1/3, 1/2, 2/3)" { switch-preset-column-width; }
+    Mod+Ctrl+R hotkey-overlay-title="Reset Window Height" { reset-window-height; }
+    Mod+F hotkey-overlay-title="Maximize Column (Full Screen Width)" { maximize-column; }
+    Mod+Shift+F hotkey-overlay-title="Fullscreen Window" { fullscreen-window; }
+    Mod+P hotkey-overlay-title="Fullscreen Window (Hyprland bind)" { fullscreen-window; }
+    Mod+Space hotkey-overlay-title="Center Active Column on Screen" { center-column; }
+    Mod+Shift+C hotkey-overlay-title="Center Active Column on Screen" { center-column; }
+
+    Mod+Minus hotkey-overlay-title="Shrink Column Width (-10%)" { set-column-width "-10%"; }
+    Mod+Equal hotkey-overlay-title="Expand Column Width (+10%)" { set-column-width "+10%"; }
+    Mod+Shift+Minus hotkey-overlay-title="Shrink Window Height (-10%)" { set-window-height "-10%"; }
+    Mod+Shift+Equal hotkey-overlay-title="Expand Window Height (+10%)" { set-window-height "+10%"; }
+
+    // --- Niri Column Magic: Consume, Expel & Tabbed Columns ---
+    Mod+BracketLeft hotkey-overlay-title="Consume / Expel Window Left" { consume-or-expel-window-left; }
+    Mod+BracketRight hotkey-overlay-title="Consume / Expel Window Right" { consume-or-expel-window-right; }
+    Mod+Comma hotkey-overlay-title="Consume Window into Column" { consume-window-into-column; }
+    Mod+Period hotkey-overlay-title="Expel Window from Column" { expel-window-from-column; }
+    Mod+W hotkey-overlay-title="Toggle Tabbed Column (Accordion)" { toggle-column-tabbed-display; }
+
+    // --- Floating Windows ---
+    Mod+O hotkey-overlay-title="Toggle Window Floating" { toggle-window-floating; }
+    Mod+Shift+V hotkey-overlay-title="Switch Focus Between Floating & Tiling" { switch-focus-between-floating-and-tiling; }
+
+    // --- Overview & Workspaces ---
+    Mod+Tab hotkey-overlay-title="Toggle Overview" { toggle-overview; }
+    Mod+S hotkey-overlay-title="Toggle Overview" { toggle-overview; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+0 { focus-workspace 10; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+    Mod+Shift+0 { move-column-to-workspace 10; }
+
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+
+    // --- Media & Hardware Keys (From Hyprland config) ---
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMicMute allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "-e4" "-n2" "set" "5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "-e4" "-n2" "set" "5%-"; }
+
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
+
+    // --- System Control ---
+    Mod+Shift+E hotkey-overlay-title="Quit Niri Session" { quit; }
+    Mod+Shift+P hotkey-overlay-title="Power Off Monitors" { power-off-monitors; }
+}
